@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using Azure;
 using Azure.Communication;
 using Azure.Communication.Sms;
-using System;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -52,6 +51,7 @@ namespace getEthInfo
         [FunctionName("GetAndSendEthInfo")]
         public static async Task RunAsync([TimerTrigger("0 0 5,17 * * *")]TimerInfo myTimer, ILogger log)
         {
+            log.LogInformation(Environment.GetEnvironmentVariable("TEST"));
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             TimeZoneInfo pstZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
             DateTime pstTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, pstZone);
@@ -85,13 +85,4 @@ namespace getEthInfo
             );
         }
     }
-}
-
-
-
-public static async Task Run(TimerInfo myTimer, ILogger log)
-{
-    //var response = await JsonSerializer.DeserializeAsync<Responses>( msg);
-
-
 }
