@@ -1,0 +1,16 @@
+{
+  "id": "Incoming_202108152014168d7621a1-1ca0-4b99-930d-16eb2f70f903",
+  "topic": "/subscriptions/1ef5e40f-803f-405f-9cb6-976fe81faed3/resourcegroups/comm/providers/microsoft.communication/communicationservices/jakephoneus",
+  "subject": "/phonenumber/+18443999088",
+  "data": {
+    "messageId": "Incoming_202108152014168d7621a1-1ca0-4b99-930d-16eb2f70f903",
+    "from": "+18138921753",
+    "to": "+18443999088",
+    "message": "Test ",
+    "receivedTimestamp": "2021-08-15T20:14:16.86Z"
+  },
+  "eventType": "Microsoft.Communication.SMSReceived",
+  "dataVersion": "1.0",
+  "metadataVersion": "1",
+  "eventTime": "2021-08-15T20:14:17Z"
+}

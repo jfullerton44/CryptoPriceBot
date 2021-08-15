@@ -10,6 +10,8 @@ using Azure.Communication.Sms;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net.Http;
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace getEthInfo
 {
@@ -17,9 +19,26 @@ namespace getEthInfo
     {
         private static readonly HttpClient client = new HttpClient();
 
-        [FunctionName("ReceiveText")]
-        public static async Task RunAsync([EventGridTrigger]EventGridEvent eventGridEvent, ILogger logger)
+        static void ConfigureEnvironmentVariablesFromLocalSettings()
         {
+            var path = Path.GetDirectoryName(typeof(GetAndSendEthInfo).Assembly.Location);
+            var json = File.ReadAllText(Path.Join(path, "local.settings.json"));
+            var parsed = Newtonsoft.Json.Linq.JObject.Parse(json).Value<Newtonsoft.Json.Linq.JObject>("Values");
+
+            foreach (var item in parsed)
+            {
+                Environment.SetEnvironmentVariable(item.Key, item.Value.ToString());
+            }
+        }
+
+        [FunctionName("ReceiveText")]
+        public static async Task RunAsync([EventGridTrigger]JObject eventGridEvent, ILogger logger)
+        {
+            var eventTrigger = eventGridEvent.ToObject<EventGridEvent>();
+            var dataObject = (JObject)eventTrigger.Data;
+            var data = dataObject.ToObject<MessageData>();
+            //var data = JsonConvert.DeserializeObject<MessageData>(eventTrigger.Data as string);
+
             logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             TimeZoneInfo pstZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
             DateTime pstTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, pstZone);
@@ -53,9 +72,9 @@ namespace getEthInfo
                 string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
                 SmsClient smsClient = new SmsClient(connectionString);
                 SmsSendResult sendResult = smsClient.Send(
-                from: "+18443999088",
-                to: "+18138921753",
-                message: $"{pstTime}\nETH Price: ${ethResponse.result.ethusd} \nGas Price: {gasResponse.result.ProposeGasPrice} \nETH Transfer Price: ${priceOfEthTransfer}\nERC20 Transfer Price: ${priceOfErc20Transfer}\n"
+                from: data.to,
+                to: data.from,
+                message: $"{pstTime}\nETH Price: ${ethResponse.result.ethusd} \nGas Price: {gasResponse.result.ProposeGasPrice} \nETH Transfer Price: ${priceOfEthTransfer}\nERC20 Transfer Price: ${priceOfErc20Transfer}\nYour Message:{data.message}\n"
                 );
             }
             catch (Exception e)
