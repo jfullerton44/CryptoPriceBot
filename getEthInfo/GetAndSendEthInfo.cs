@@ -66,8 +66,8 @@ namespace getEthInfo
                 string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
                 SmsClient smsClient = new SmsClient(connectionString);
                 SmsSendResult sendResult = smsClient.Send(
-                from: "+18443999088",
-                to: "+18138921753",
+                from: Environment.GetEnvironmentVariable("OUTGOING_NUMBER"),
+                to: Environment.GetEnvironmentVariable("INCOMING_NUMBER"),
                 message: $"{pstTime}\nETH Price: ${ethResponse.result.ethusd} \nGas Price: {gasResponse.result.ProposeGasPrice} \nETH Transfer Price: ${priceOfEthTransfer}\nERC20 Transfer Price: ${priceOfErc20Transfer}\n"
                 );
             }
