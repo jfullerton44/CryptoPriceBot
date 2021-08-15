@@ -1,37 +1,24 @@
+// Default URL for triggering event grid function in the local environment.
+// http://localhost:7071/runtime/webhooks/EventGrid?functionName={functionname}
 using System;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Azure.EventGrid.Models;
+using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using Azure;
-using Azure.Communication;
 using Azure.Communication.Sms;
 using System.Threading.Tasks;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using Newtonsoft.Json;
-using System.Configuration;
-using System.IO;
+using System.Net.Http;
 
 namespace getEthInfo
 {
-    public static class GetAndSendEthInfo
+    public static class ReceiveText
     {
-        static void ConfigureEnvironmentVariablesFromLocalSettings()
-        {
-            var path = Path.GetDirectoryName(typeof(GetAndSendEthInfo).Assembly.Location);
-            var json = File.ReadAllText(Path.Join(path, "local.settings.json"));
-            var parsed = Newtonsoft.Json.Linq.JObject.Parse(json).Value<Newtonsoft.Json.Linq.JObject>("Values");
-
-            foreach (var item in parsed)
-            {
-                Environment.SetEnvironmentVariable(item.Key, item.Value.ToString());
-            }
-        }
         private static readonly HttpClient client = new HttpClient();
 
-        [FunctionName("GetAndSendEthInfo")]
-        public static async Task RunAsync([TimerTrigger("0 0 5,17 * * *")] TimerInfo myTimer, ILogger logger)
+        [FunctionName("ReceiveText")]
+        public static async Task RunAsync([EventGridTrigger]EventGridEvent eventGridEvent, ILogger logger)
         {
             logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             TimeZoneInfo pstZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
@@ -71,14 +58,14 @@ namespace getEthInfo
                 message: $"{pstTime}\nETH Price: ${ethResponse.result.ethusd} \nGas Price: {gasResponse.result.ProposeGasPrice} \nETH Transfer Price: ${priceOfEthTransfer}\nERC20 Transfer Price: ${priceOfErc20Transfer}\n"
                 );
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogError("Task Run Error", e);
                 throw e;
             }
-            
 
-            
+
+
         }
     }
 }
