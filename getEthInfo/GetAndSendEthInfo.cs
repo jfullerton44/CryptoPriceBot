@@ -49,9 +49,9 @@ namespace getEthInfo
         private static readonly HttpClient client = new HttpClient();
 
         [FunctionName("GetAndSendEthInfo")]
-        public static async Task RunAsync([TimerTrigger("0 0 5,17 * * *")]TimerInfo myTimer, ILogger log)
+        public static async Task RunAsync([TimerTrigger("0 0 5,17 * * *")]TimerInfo myTimer, ILogger logger)
         {
-            log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+            logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             TimeZoneInfo pstZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
             DateTime pstTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, pstZone);
 
@@ -59,14 +59,14 @@ namespace getEthInfo
             string apiKey = Environment.GetEnvironmentVariable("APIKEY");
             var stringTask = client.GetStringAsync("https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=" + apiKey);
             var msg = await stringTask;
-            log.LogInformation(msg);
+            logger.LogInformation(msg);
             var gasResponse = JsonConvert.DeserializeObject<GasPriceResponse>(msg as string);
-            log.LogInformation(gasResponse.result.ProposeGasPrice.ToString());
+            logger.LogInformation(gasResponse.result.ProposeGasPrice.ToString());
 
             var getEthPrice = await client.GetStringAsync("https://api.etherscan.io/api?module=stats&action=ethprice&apikey=" + apiKey);
-            log.LogInformation(getEthPrice);
+            logger.LogInformation(getEthPrice);
             var ethResponse = JsonConvert.DeserializeObject<EthPriceResponse>(getEthPrice as string);
-            log.LogInformation(ethResponse.result.ethusd.ToString());
+            logger.LogInformation(ethResponse.result.ethusd.ToString());
             var gasPrice = gasResponse.result.ProposeGasPrice;
             var ethPrice = Math.Round(ethResponse.result.ethusd, 2);
             var gasForEthTransfer = 21000;
@@ -74,7 +74,7 @@ namespace getEthInfo
             var gasForErc20Transfer = 65000;
             var priceOfEthTransfer = Math.Round(gasPrice * ethToGas * gasForEthTransfer * ethPrice, 2);
             var priceOfErc20Transfer = Math.Round(gasPrice * ethToGas * gasForErc20Transfer * ethPrice, 2);
-            log.LogInformation("Eth Transfer: " + priceOfEthTransfer.ToString() + " ERC20 Transfer: " + priceOfErc20Transfer.ToString());
+            logger.LogInformation("Eth Transfer: " + priceOfEthTransfer.ToString() + " ERC20 Transfer: " + priceOfErc20Transfer.ToString());
             string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
             SmsClient smsClient = new SmsClient(connectionString);
             SmsSendResult sendResult = smsClient.Send(
