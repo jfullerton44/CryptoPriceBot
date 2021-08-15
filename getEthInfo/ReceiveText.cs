@@ -74,7 +74,7 @@ namespace getEthInfo
                 SmsSendResult sendResult = smsClient.Send(
                 from: data.to,
                 to: data.from,
-                message: $"{pstTime}\nETH Price: ${ethResponse.result.ethusd} \nGas Price: {gasResponse.result.ProposeGasPrice} \nETH Transfer Price: ${priceOfEthTransfer}\nERC20 Transfer Price: ${priceOfErc20Transfer}\nYour Message:{data.message}\n"
+                message: $"{pstTime}\nETH Price: ${ethResponse.result.ethusd} \nGas Price: {gasResponse.result.ProposeGasPrice} \nETH Transfer Price: ${priceOfEthTransfer}\nERC20 Transfer Price: ${priceOfErc20Transfer}\nYour Message: {data.message}\n"
                 );
             }
             catch (Exception e)
