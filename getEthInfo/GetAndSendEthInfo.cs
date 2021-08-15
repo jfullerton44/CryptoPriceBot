@@ -51,7 +51,6 @@ namespace getEthInfo
         [FunctionName("GetAndSendEthInfo")]
         public static async Task RunAsync([TimerTrigger("0 0 5,17 * * *")]TimerInfo myTimer, ILogger log)
         {
-            log.LogInformation(Environment.GetEnvironmentVariable("TEST"));
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             TimeZoneInfo pstZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
             DateTime pstTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, pstZone);
