@@ -12,7 +12,6 @@ namespace Functions.Tests
     {
         private readonly ILogger logger = TestFactory.CreateLogger();
 
-
         [Fact]
         public async Task Call_Timer()
         {
@@ -27,7 +26,6 @@ namespace Functions.Tests
         {
             var logger = (ListLogger)TestFactory.CreateLogger(LoggerTypes.List);
             var path = Path.GetDirectoryName(typeof(FunctionsTests).Assembly.Location);
-            var json = File.ReadAllText("../../../input.json");
             JObject o1 = JObject.Parse(File.ReadAllText("../../../input.json"));
             await ReceiveText.RunAsync((Newtonsoft.Json.Linq.JObject)o1, logger);
             var msg = logger.Logs[0];
