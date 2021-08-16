@@ -264,3 +264,5 @@ __pycache__/
 *.pyc
 
 local.settings.json
+
+**/input.json
